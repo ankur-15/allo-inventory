@@ -1,0 +1,14 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+export async function GET() {
+  try {
+    const warehouses = await prisma.warehouse.findMany({
+      orderBy: { name: "asc" },
+    });
+    return NextResponse.json(warehouses);
+  } catch (err) {
+    console.error("[GET /api/warehouses]", err);
+    return NextResponse.json({ error: "Could not fetch warehouses" }, { status: 500 });
+  }
+}
