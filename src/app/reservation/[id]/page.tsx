@@ -94,31 +94,27 @@ export default function ReservationPage({
   }, [secondsLeft, reservation?.status, fetchReservation]);
 
   async function handleConfirm() {
-    if (!id) return;
-    setActionLoading(true);
-    try {
-      const res = await fetch(`/api/reservations/${id}/confirm`, { method: "POST" });
-      const data = await res.json();
+  try {
+    const res = await fetch(`/api/reservations/${id}/confirm`, {
+      method: "POST",
+    });
 
-      if (res.status === 410) {
-        toast.error("Your reservation expired before payment could be confirmed.");
-        await fetchReservation();
-        return;
-      }
+    const data = await res.json();
 
-      if (!res.ok) {
-        toast.error(data.error ?? "Confirmation failed");
-        return;
-      }
-
-      toast.success("Purchase confirmed! 🎉");
-      await fetchReservation();
-    } catch {
-      toast.error("Network error — please try again");
-    } finally {
-      setActionLoading(false);
+    if (!res.ok) {
+      toast.error(data.error || "Confirmation failed");
+      return;
     }
+
+    toast.success("Purchase confirmed!");
+
+    router.push("/");
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Network error — please try again");
   }
+}
 
   async function handleCancel() {
     if (!id) return;
